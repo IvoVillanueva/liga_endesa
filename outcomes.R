@@ -1,7 +1,5 @@
 
-
-# load libraries ----------------------------------------------------------
-
+# librerias ---------------------------------------------------------------
 
 
 library(tidyverse)
@@ -11,17 +9,41 @@ library(gt)
 library(gtExtras)
 
 
-# datos -------------------------------------------------------------------
+# datos, tabla, nombres y logos-------------------------------------------------------------------
 
+url <- "https://www.acb.com/resultadosClasificacion/ver" %>%
+  read_html()
 
+acb <- tibble(id_team = url %>% html_elements(".nombre_equipo a") %>%
+                html_attr("href") ,
+              tm =url %>% html_elements("a span.nombre_largo") %>%
+                html_text("class"),
+              abb = url %>% html_elements("a span.abreviatura") %>%
+                html_text("class"),
+              logo = url %>% html_elements("td.logo_equipo img") %>%
+                html_attr("src")) %>%
+  mutate(id_team = str_extract(id_team, "[0-9]+"),
+         logo = paste0("https:", logo),
+         tm_bref =case_when(
+           tm == "Barça" ~ "FC Barcelona Lassa",
+           tm == "Río Breogán" ~ "Rio Breogan",
+           tm == "BAXI Manresa" ~ "Baxi Manresa",
+           tm == "Gran Canaria" ~ "Herbalife Gran Canaria",
+           tm == "Urbas Fuenlabrada" ~ "Montakit Fuenlabrada",
+           tm ==  "Joventut Badalona" ~ "Divina Seguros Joventut",
+           TRUE ~ tm
+         )) %>%
+  select(id_team, tm, tm_bref, abb, logo)
+
+write.csv(acb, "acb.csv", row.names = FALSE)
 
 teams <- read.csv("acb.csv")
+
+
 url <- "https://www.basketball-reference.com/international/spain-liga-acb/2022-schedule.html"
 url2 <- "https://www.basketball-reference.com/international/spain-liga-acb/2022.html"
 
-
-# df schedule -------------------------------------------------------------
-
+# df schedule con los resultados-------------------------------------------------------------
 
 df <- url %>%
   read_html() %>%
@@ -43,10 +65,7 @@ df <- url %>%
   )
 
 
-
-# df standings ------------------------------------------------------------
-
-
+# df standings clasificicacion------------------------------------------------------------
 
 standings <- url2 %>%
   read_html() %>%
@@ -57,7 +76,6 @@ standings <- url2 %>%
   mutate_at(vars("w":"pa_g"), as.numeric) %>%
   mutate(gb = ifelse(is.na(gb), 0, gb)) %>%
   select(team = x, w_l_percent:pa_g)
-
 
 # join and crates list tables -------------------------------------------------------------
 
@@ -134,3 +152,4 @@ standings %>%
   ) %>%
   gtsave("final_df.png")
 
+# Ivo Villanueva ----------------------------------------------------------
