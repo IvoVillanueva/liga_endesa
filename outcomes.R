@@ -79,12 +79,12 @@ standings <- url2 %>%
 home <- df %>%
   dplyr::group_by(team) %>%
   filter(home_away == "home") %>%
-  dplyr::summarize(home = list(score_home), .groups = "drop")
+  dplyr::summarize(home = list(score_home))
 
 away <- df %>%
   dplyr::group_by(team) %>%
   filter(home_away == "away") %>%
-  dplyr::summarize(away = list(score_away), .groups = "drop")
+  dplyr::summarize(away = list(score_away))
 
 
 joined_df <- df %>%
