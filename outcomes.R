@@ -103,7 +103,6 @@ joined_df <- df %>%
 
 standings %>%
   left_join(joined_df) %>%
-  group_by(team) %>%
   ungroup() %>%
   mutate(Pos = row_number()) %>%
   select(Pos, logo, tm, Wins, Losses, w_l_percent, gb, ps_g, pa_g, home, away, outcomes) %>%
