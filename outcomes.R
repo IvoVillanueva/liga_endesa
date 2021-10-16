@@ -60,10 +60,7 @@ df <- url %>%
   pivot_longer(contains("team"), names_to = "home_away", values_to = "team", names_prefix = ("team_")) %>%
   mutate(
     result = ifelse(home_away == "home", result, -result),
-    win = ifelse(result > 0, 1, 0)) %>%
-  select(team, home_away, win,score
-  )
-
+    win = ifelse(result > 0, 1, 0)) 
 
 # df standings clasificicacion------------------------------------------------------------
 
